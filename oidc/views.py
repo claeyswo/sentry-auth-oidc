@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import jwt
 import logging
 
 from django.http import HttpRequest
@@ -12,7 +13,7 @@ from sentry.organizations.services.organization.model import RpcOrganization
 from sentry.plugins.base.response import DeferredResponse
 from sentry.utils.signing import urlsafe_b64decode
 
-from .constants import ERR_INVALID_RESPONSE, ISSUER
+from .constants import ERR_INVALID_RESPONSE, ISSUER, REQUIRED_CLAIM
 
 logger = logging.getLogger("sentry.auth.oidc")
 
@@ -23,8 +24,27 @@ class FetchUser(AuthView):
         self.version = version
         super().__init__(*args, **kwargs)
 
+    def has_role(data, role):
+        return any(
+            role in details.get("roles", [])
+            for details in data.get("resource_access", {}).values()
+        )
+
     def dispatch(self, request: HttpRequest, helper) -> Response:  # type: ignore
         data = helper.fetch_state("data")
+
+        try:
+            if REQUIRED_CLAIM and not self.has_role(
+                jwt.decode(data["access_token"], options={"verify_signature": False}),
+                REQUIRED_CLAIM,
+            ):
+                logger.error("Required claim %s not available" % REQUIRED_CLAIM)
+                return helper.error(ERR_INVALID_RESPONSE)
+        except Exception:
+            logger.error(
+                "Error reading and decoding access_token from OAuth response: %s" % data
+            )
+            return helper.error(ERR_INVALID_RESPONSE)
 
         try:
             id_token = data["id_token"]
