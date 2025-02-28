@@ -15,7 +15,7 @@ from sentry.utils.signing import urlsafe_b64decode
 
 from .constants import ERR_INVALID_RESPONSE, ISSUER, REQUIRED_CLAIM
 
-logger = logging.getLogger("sentry.auth.oidc")
+logger = logging.getLogger("sentry.auth.oeidc")
 
 
 class FetchUser(AuthView):
