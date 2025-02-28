@@ -24,7 +24,7 @@ class FetchUser(AuthView):
         self.version = version
         super().__init__(*args, **kwargs)
 
-    def has_role(data, role):
+    def has_role(self, data, role):
         return any(
             role in details.get("roles", [])
             for details in data.get("resource_access", {}).values()
