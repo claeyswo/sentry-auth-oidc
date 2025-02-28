@@ -40,7 +40,8 @@ class FetchUser(AuthView):
             ):
                 logger.error("Required claim %s not available" % REQUIRED_CLAIM)
                 return helper.error(ERR_INVALID_RESPONSE)
-        except Exception:
+        except Exception as e:
+            logger.exception(e)
             logger.error(
                 "Error reading and decoding access_token from OAuth response: %s" % data
             )
