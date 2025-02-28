@@ -23,10 +23,10 @@ from .constants import (
     TOKEN_ENDPOINT,
     USERINFO_ENDPOINT,
 )
-from .views import FetchUser, oidc_configure_view
+from .views import FetchUser, oeidc_configure_view
 
 
-class OIDCLogin(OAuth2Login):
+class OEIDCLogin(OAuth2Login):
     authorize_url = AUTHORIZATION_ENDPOINT
     client_id = CLIENT_ID
     scope = SCOPE
@@ -45,9 +45,9 @@ class OIDCLogin(OAuth2Login):
         return params
 
 
-class OIDCProvider(OAuth2Provider):
+class OEIDCProvider(OAuth2Provider):
     name = ISSUER
-    key = "oidc"
+    key = "oeidc"
 
     def __init__(self, domain=None, domains=None, version=None, **config):
         if domain:
@@ -76,11 +76,11 @@ class OIDCProvider(OAuth2Provider):
     def get_configure_view(
         self,
     ) -> Callable[[HttpRequest, RpcOrganization, RpcAuthProvider], DeferredResponse]:
-        return oidc_configure_view
+        return oeidc_configure_view
 
     def get_auth_pipeline(self):
         return [
-            OIDCLogin(domains=self.domains, client_id=self.get_client_id()),
+            OEIDCLogin(domains=self.domains, client_id=self.get_client_id()),
             OAuth2Callback(
                 access_token_url=TOKEN_ENDPOINT,
                 client_id=self.get_client_id(),

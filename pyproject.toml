@@ -39,7 +39,7 @@ fixtures = "^4.1.0"
 profile = "black"
 
 [tool.poetry.plugins."sentry.apps"]
-"oidc" = "oeidc.apps.Config"
+"oeidc" = "oeidc.apps.Config"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

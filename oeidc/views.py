@@ -80,7 +80,7 @@ class FetchUser(AuthView):
         return helper.next_step()
 
 
-def oidc_configure_view(
+def oeidc_configure_view(
     request: HttpRequest, organization: RpcOrganization, auth_provider: RpcAuthProvider
 ) -> DeferredResponse:
     config = auth_provider.config
@@ -90,7 +90,7 @@ def oidc_configure_view(
     else:
         domains = config.get("domains")
     return DeferredResponse(
-        "oidc/configure.html", {"provider_name": ISSUER or "", "domains": domains or []}
+        "oeidc/configure.html", {"provider_name": ISSUER or "", "domains": domains or []}
     )
 
 
